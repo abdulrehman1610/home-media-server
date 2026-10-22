@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Access Key — Media Server</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>">
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+<main class="gate-shell">
+  <div class="gate-mark" aria-hidden="true"><span>·</span><span>·</span><span>·</span></div>
+  <p class="eyebrow">LOCAL MEDIA SERVER</p>
+  <h1>Welcome back.</h1>
+  <p class="gate-copy">Enter your credentials to continue to<br>your private library.</p>
+  
+  <div class="error" id="error"></div>
+  
+  <form class="gate-form" id="loginForm">
+    <label for="username">Username</label>
+    <div class="key-input">
+      <input id="username" type="text" placeholder="Username" autocomplete="username" required autofocus>
+    </div>
+    
+    <label for="password">Password</label>
+    <div class="key-input">
+      <input id="password" type="password" placeholder="••••••••••••" autocomplete="current-password" required>
+    </div>
+    
+    <label for="pin">2FA Security PIN</label>
+    <div class="key-input" style="margin-bottom: 28px;">
+      <input id="pin" type="password" placeholder="6-digit PIN (default: 717007)" autocomplete="one-time-code" inputmode="numeric" maxlength="6" required>
+      <button aria-label="Continue" type="submit" id="submitBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 7h10v10"/><path d="M7 17 17 7"/>
+        </svg>
+      </button>
+    </div>
+  </form>
+
+  <div class="gate-footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>
+    </svg>
+    <span>Encrypted session</span>
+    <span class="dot-separator">·</span>
+    <span>Local network only</span>
+    <span class="dot-separator">·</span>
+    <span>Rate-limited</span>
+  </div>
+</main>
+
+<script>
+// Purge any legacy tokens from localStorage / sessionStorage
+try {
+  localStorage.removeItem('token');
+  localStorage.removeItem('session');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('session');
+} catch (e) {}
+
+const form = document.getElementById('loginForm');
+const errEl = document.getElementById('error');
+const btn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errEl.classList.remove('show');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        pin: document.getElementById('pin').value
+      })
+    });
+    if (res.ok) {
+      window.location.href = '/';
+      return;
+    }
+    const data = await res.json();
+    errEl.textContent = data.detail || 'Invalid username, password, or PIN';
+    errEl.classList.add('show');
+    if (res.status === 429) {
+      btn.disabled = true;
+      return;
+    }
+  } catch (err) {
+    errEl.textContent = 'Connection error. Check Wi-Fi connection.';
+    errEl.classList.add('show');
+  }
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Storage Hub — Media Server</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>">
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+<main class="app-shell">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <a href="/" class="brand">
+      <div class="brand-mark"><span>·</span><span>·</span><span>·</span></div>
+      <span>LOCAL</span>
+    </a>
+    <div class="server-status">
+      <i></i> <span>Connected</span>
+      <span class="status-detail">{{lan_ip}}:8000</span>
+    </div>
+    <nav class="top-actions" aria-label="Application navigation">
+      <a href="/logout" class="avatar" title="Sign Out ({{username}})">{{avatar_letter}}</a>
+    </nav>
+  </header>
+
+  <div class="app-content">
+    <!-- Hub Header -->
+    <section class="hub-header">
+      <div>
+        <p class="eyebrow">STORAGE HUB</p>
+        <h1>Drives &amp; storage</h1>
+      </div>
+      <p class="updated">Click a drive to explore</p>
+    </section>
+
+    <!-- Connected Drives -->
+    <section class="drive-grid" aria-label="Connected drives">
+      {{drive_cards}}
+    </section>
+
+    <!-- Hub Columns: Shortcuts & Jump -->
+    <div class="hub-columns">
+      <section>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">FREQUENTLY USED</p>
+            <h2>Quick directories</h2>
+          </div>
+        </div>
+        <div class="shortcut-list">
+          {{shortcut_items}}
+        </div>
+      </section>
+
+      <section class="jump-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">NAVIGATION</p>
+            <h2>Jump to directory</h2>
+          </div>
+        </div>
+        <form class="jump-form" action="/" method="GET">
+          <input name="path" aria-label="Directory path" placeholder="e.g. D:\Movies or C:\Users" required>
+          <button aria-label="Open directory" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 7h10v10"/><path d="M7 17 17 7"/>
+            </svg>
+          </button>
+        </form>
+        <p class="hint">Type or paste any directory path on this computer</p>
+      </section>
+    </div>
+  </div>
+</main>
+</body>
+</html>

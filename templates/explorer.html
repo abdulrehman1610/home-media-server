@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Explorer — Media Server</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>">
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+<main class="app-shell">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <a href="/" class="brand">
+      <div class="brand-mark"><span>·</span><span>·</span><span>·</span></div>
+      <span>LOCAL</span>
+    </a>
+    <div class="server-status">
+      <i></i> <span>Connected</span>
+      <span class="status-detail">{{lan_ip}}:8000</span>
+    </div>
+    <nav class="top-actions" aria-label="Application navigation">
+      <a href="/" class="storage-hub-btn" title="Back to Drives">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/>
+        </svg>
+        <span class="hide-mobile">Storage Hub</span>
+      </a>
+      <a href="/logout" class="avatar" title="Sign Out ({{username}})">{{avatar_letter}}</a>
+    </nav>
+  </header>
+
+  <div class="app-content">
+    <!-- Explorer Section -->
+    <section class="explorer">
+      <div class="explorer-top">
+        <div class="breadcrumb">
+          {{breadcrumbs}}
+        </div>
+        <div class="explorer-actions">
+          <a href="/" class="switch-drive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/>
+            </svg>
+            Drives Hub
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </a>
+          <button id="viewToggle" class="view-toggle" aria-label="Toggle view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="explorer-toolbar">
+        {{up_button}}
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input id="q" placeholder="Search this folder" aria-label="Search this folder" autocomplete="off">
+          <button id="clearSearch" aria-label="Clear search" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+        <span class="item-count" id="totalCount">{{total_count}} items</span>
+      </div>
+
+      <!-- Folders Area -->
+      <div class="folder-area" id="folderArea">
+        <div class="content-label">
+          <span>Folders</span>
+          <span id="folderCountLabel">{{folder_count_padded}}</span>
+        </div>
+        <div class="folder-grid" id="folderGrid">
+          {{folder_cards}}
+        </div>
+      </div>
+
+      <!-- Media & Files Area -->
+      <div class="file-area" id="fileArea">
+        <div class="content-label">
+          <span>Media &amp; files</span>
+          <span id="fileCountLabel">{{file_count_padded}}</span>
+        </div>
+        <div class="file-list" id="fileList">
+          {{file_rows}}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Theater Mode Lightbox -->
+  <div id="lightbox" class="lightbox" style="display:none;" role="dialog" aria-modal="true" aria-label="Media preview">
+    <div class="lightbox-head">
+      <div>
+        <p class="eyebrow">PREVIEWING</p>
+        <h2 id="lightboxTitle">File</h2>
+      </div>
+      <button id="lightboxClose" aria-label="Close preview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="media-stage" id="mediaStage"></div>
+    <div class="lightbox-foot">
+      <span id="lightboxMeta">TYPE · SIZE</span>
+      <a id="lightboxDownload" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+        Download
+      </a>
+    </div>
+  </div>
+</main>
+
+<script src="/static/app.js?v=2"></script>
+</body>
+</html>
