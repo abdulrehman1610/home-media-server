@@ -1,8 +1,22 @@
 // ─────────────────────────────────────────────────────────────
-// Client-Side Explorer Controller (Search, View Toggle, Lightbox)
+// Client-Side Explorer Controller (Theme, Search, View, Lightbox)
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  // 0. Dark / Light Theme Controller
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || 
+        (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('theme', next);
+      } catch (e) {}
+    });
+  }
+
   // 1. Live Instant Search Filter
   const q = document.getElementById('q');
   const clearSearch = document.getElementById('clearSearch');
